@@ -1,19 +1,20 @@
 import { useNavigate, Outlet, Link } from "react-router-dom";
 import logo from "../../images/LogoBN.png";
-import { ErrorSpan, ImageLogo, InputSpace, Nav } from "./NavbarStyled";
+import {
+  ErrorSpan,
+  ImageLogo,
+  InputSpace,
+  Nav,
+  UserLoggedSpace,
+} from "./NavbarStyled";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../Button/Button";
-
-const searchSchema = z.object({
-  title: z
-    .string()
-    .nonempty({ message: "Campo não pode ser vazio " })
-    .refine((value) => !/^\s*$/.test(value), {
-      message: " A pesquisa não pode ser vazia ",
-    }),
-});
+import { useContext, useEffect } from "react";
+import { searchSchema } from "../../schemas/searchSchema";
+import { userLogged } from "../../service/UserService";
+import Cookies from "js-cookie";
+import { UserContext } from "../../Context/UserContext";
 
 export function Navbar() {
   const {
@@ -24,6 +25,7 @@ export function Navbar() {
   } = useForm({ resolver: zodResolver(searchSchema) });
 
   const Navigate = useNavigate();
+  const { user, setUser } = useContext(UserContext);
 
   const onSearch = (data) => {
     const { title } = data;
@@ -31,16 +33,35 @@ export function Navbar() {
     reset();
   };
 
-  function goAuth() {
-    Navigate("/auth");
+  async function findUserLogged() {
+    try {
+      const response = await userLogged();
+      setUser(response.data);
+    } catch (error) {
+      console.log(error);
+    }
   }
+
+  function signout() {
+    Cookies.remove("token");
+    setUser(undefined);
+    Navigate("/");
+  }
+
+  useEffect(() => {
+    if (Cookies.get("token")) findUserLogged();
+  }, []);
+
+  // function goAuth() {
+  //   Navigate("/auth");
+  // }
 
   return (
     <>
       <Nav>
         <form onSubmit={handleSubmit(onSearch)}>
           <InputSpace>
-            <button>
+            <button type="submit">
               <i className="bi bi-search"></i>
             </button>
 
@@ -56,9 +77,21 @@ export function Navbar() {
           <ImageLogo src={logo} alt="Logo do Breaking News" />
         </Link>
 
-        <Link to="/auth">
-          <Button onClick={goAuth}>Entrar</Button>
-        </Link>
+        {user ? (
+          <UserLoggedSpace>
+            <Link to="/profile" style={{ textDecoration: "none" }}>
+              <h2>{user.name}</h2>
+            </Link>
+
+            <i className="bi bi-box-arrow-right" onClick={signout}></i>
+          </UserLoggedSpace>
+        ) : (
+          <Link to="/auth">
+            <Button type="button" text="Entrar">
+              Entrar
+            </Button>
+          </Link>
+        )}
       </Nav>
       {errors.title && <ErrorSpan>{errors.title.message}</ErrorSpan>}
       <Outlet />

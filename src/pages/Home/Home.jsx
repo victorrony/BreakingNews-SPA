@@ -1,34 +1,50 @@
+import { useState, useEffect } from "react";
+
 import { Card } from "../../components/Cards/Card";
-import { HomeBody } from "./HomeStyle";
-import { getAllPosts } from "../../service/PostsService";
-import { useEffect, useState } from "react";
+import { getAllPosts, getTopPost } from "../../service/PostsService";
+import { HomeBody, HomeHeader } from "./HomeStyle.jsx";
+//
 
 export default function Home() {
-  const [news, setNews] = useState([]);
-  async function findAllPosts() {
-    const response = await getAllPosts();
-    setNews(response.data.results);
+  const [posts, setPosts] = useState([]);
+  const [topPost, setTopPost] = useState({});
+
+  async function findPost() {
+    const postsResponse = await getAllPosts();
+    setPosts(postsResponse.data.results);
+    console.log(postsResponse);
+
+    const topPostResponse = await getTopPost();
+    setTopPost(topPostResponse.data.post);
   }
 
   useEffect(() => {
-    findAllPosts();
+    findPost();
   }, []);
 
   return (
     <>
+      <HomeHeader>
+        <Card
+          top={topPost.top}
+          title={topPost.title}
+          text={topPost.text}
+          banner={topPost.banner}
+          likes={topPost.likes}
+          comments={topPost.comments}
+        />
+      </HomeHeader>
       <HomeBody>
-        {news.map((item) =>
-          console.log(news)(
-            <Card
-              key={item.id}
-              title={item.title}
-              text={item.text}
-              banner={item.banner}
-              likes={item.likes.length}
-              comments={item.comments.length}
-            />
-          )
-        )}
+        {posts.map((item) => (
+          <Card
+            key={item.id}
+            title={item.title}
+            text={item.text}
+            banner={item.banner}
+            likes={item.likes}
+            comments={item.comments}
+          />
+        ))}
       </HomeBody>
     </>
   );

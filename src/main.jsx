@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Navbar } from "./components/Navbar/Navbar";
 import Home from "./pages/Home/Home";
@@ -8,6 +7,8 @@ import Search from "./pages/Search/Search";
 import GlobalStyled from "./GlobalStyled.jsx";
 import ErrorPage from "./pages/ErrorPage/ErrorPage";
 import { Authentication } from "./pages/Authentication/Authentcation";
+import { Profile } from "./pages/Profile/Profile";
+import UserProvider from "./Context/UserContext";
 
 const router = createBrowserRouter([
   {
@@ -20,21 +21,26 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "/search/title",
+        path: "/search/:title",
         element: <Search />,
       },
     ],
   },
   {
+    path: "/Profile",
+    element: <Profile />,
+  },
+  {
     path: "/auth",
     element: <Authentication />,
-  }
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <GlobalStyled />
-    <App />
-    <RouterProvider router={router} />
+    <UserProvider>
+      <RouterProvider router={router} />
+    </UserProvider>
   </React.StrictMode>
 );

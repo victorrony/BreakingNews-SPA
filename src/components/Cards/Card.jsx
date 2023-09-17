@@ -1,41 +1,42 @@
 import PropTypes from "prop-types";
-import { CardContainer, CardBody, CardFooter } from "./CardStyle";
 import { TextLimit } from "../TextLimit/TextLimit";
+import { CardBody, CardContainer, CardFooter, CardHeader } from "./CardStyle";
 
 export function Card(props) {
-  if (!props) {
-    return null; // or a fallback UI if desired
-  }
-
   return (
     <CardContainer>
       <CardBody>
         <div>
-          <h2>{this.props.title}</h2>
-          <img src={this.props.image} alt="imagens" />
+          <CardHeader top={props.top}>
+            <h2>{props.title}</h2>
+            <TextLimit text={props.text} limit={150} />
+          </CardHeader>
+
+          <CardFooter>
+            <section>
+              <i className="bi bi-hand-thumbs-up"></i>
+              <span>{props.likes?.length}</span>
+            </section>
+
+            <section>
+              <i className="bi bi-chat"></i>
+              <span>{props.comments?.length}</span>
+            </section>
+          </CardFooter>
         </div>
-        <TextLimit text={this.props.text} limit={150} />
+
+        <img src={props.banner} alt="Imagem" />
       </CardBody>
-
-      <CardFooter>
-        <i className="bi bi-hand-thumbs-up"></i>
-        <span>{this.props.likes}</span>
-
-        <i className="bi bi-chat"></i>
-        <span>{this.props.comments}</span>
-      </CardFooter>
     </CardContainer>
   );
 }
 
 Card.propTypes = {
-  props: PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    text: PropTypes.string.isRequired,
-    image: PropTypes.string.isRequired,
-    likes: PropTypes.number.isRequired,
-    comments: PropTypes.number.isRequired,
-  }),
+  top: PropTypes.bool,
+  title: PropTypes.string,
+  text: PropTypes.string,
+  banner: PropTypes.string,
+  likes: PropTypes.array,
+  comments: PropTypes.array,
 };
-
-export default Card;
+  

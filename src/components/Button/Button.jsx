@@ -6,6 +6,6 @@ export function Button({ type, text }) {
 }
 
 Button.propTypes = {
-    type: PropTypes.string.isRequired,
-    text: PropTypes.string.isRequired,
-}
+  type: PropTypes.string,
+  text: PropTypes.string,
+};

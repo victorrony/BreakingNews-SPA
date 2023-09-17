@@ -12,4 +12,4 @@ Input.propTypes = {
   placeholder: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   register: PropTypes.func.isRequired,
-  };
+};
